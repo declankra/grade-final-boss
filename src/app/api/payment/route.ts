@@ -10,7 +10,6 @@ const stripe = new Stripe(
     ? process.env.STRIPE_SECRET_KEY!
     : process.env.STRIPE_SECRET_KEY_DEV!,
   { 
-    // Use a stable API version, e.g., "2022-11-15" or the latest you prefer.
     apiVersion: '2024-12-18.acacia'
   }
 );
