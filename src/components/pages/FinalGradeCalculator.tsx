@@ -17,7 +17,7 @@ const getResultMessage = (score: number): { message: string; color: string } => 
     };
   } else if (score >= 85) {
     return {
-      message: "Possible. But you'll need a lot of White Sugarfree Monster Energy.",
+      message: "Possible. But you'll need a lot of White Zero Sugar Monster Energy.",
       color: "bg-orange-50 border-orange-100 text-orange-900"
     };
   } else if (score >= 60) {
@@ -37,8 +37,8 @@ const getResultMessage = (score: number): { message: string; color: string } => 
     };
   } else {
     return {
-      message: "Don't even need to show up. Play some big bootie mix and celebrate. Cheers!",
-      color: "bg-blue-50 border-blue-100 text-blue-900"
+      message: "Don't even need to show up. Turn up the big bootie mix and celebrate. Cheers!",
+      color: "bg-green-50 border-green-100 text-green-900"
     };
   }
 };
@@ -164,7 +164,7 @@ export default function FinalGradeCalculator() {
               <p className="text-lg mb-2">
                 You need a <span className="font-bold">{result.toFixed(2)}%</span> on your final exam to reach your desired grade.
               </p>
-              <p className="text-lg font-medium">
+              <p className="text-lg font-bold">
                 {getResultMessage(result).message}
               </p>
             </div>
