@@ -1,6 +1,6 @@
 // src/app/final-grade-calculator/page.tsx
 import { Metadata } from 'next';
-import FinalGradeCalculator from '@/components/pages/FinalGradeCalculator';
+import FinalGradeCalculator from '@/components/sections/FinalGradeCalculator';
 
 export const metadata: Metadata = {
   title: 'Final Grade Calculator | Grade Final Boss',

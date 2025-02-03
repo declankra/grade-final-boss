@@ -19,21 +19,21 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  title: "Create dkBuilds Next App",
-  description: "dkbuilds next app starter-kit",
+  title: "Grade Final Boss | Defeat your Final Exams",
+  description: "Cumulative Grade and GPA Calculator for College Students",
 
     // Open Graph metadata for rich sharing previews
     openGraph: {
-      title: "dkBuilds Next App",
-      description: "dkbuilds next app starter-kit",
+      title: "Grade Final Boss | Defeat your Final Exams",
+      description: "Cumulative Grade and GPA Calculator for College Students",
       url: process.env.NEXT_PUBLIC_BASE_URL,
-      siteName: "dkBuilds Next App",
+      siteName: "Grade Final Boss",
       images: [
         {
           url: "/og-image.png", // This should be 1200x630px for optimal sharing
           width: 1200,
           height: 630,
-          alt: "dkBuilds Next App Preview",
+          alt: "Grade Final Boss Preview",
         }
       ],
       locale: "en_US",

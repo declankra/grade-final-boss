@@ -1,14 +1,22 @@
 // src/components/pages/final-grade-calculator.tsx
 
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import SignUpDialog from "@/components/ui/sign-up-dialog";
 
+const supabaseBrowserClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+);
+
+// Utility to get a "message" for the required exam score
 const getResultMessage = (score: number): { message: string; color: string } => {
   if (score > 100) {
     return {
@@ -44,12 +52,48 @@ const getResultMessage = (score: number): { message: string; color: string } => 
 };
 
 export default function FinalGradeCalculator() {
+  // Form inputs
   const [currentGrade, setCurrentGrade] = useState<string>('');
   const [desiredGrade, setDesiredGrade] = useState<string>('');
   const [finalWeight, setFinalWeight] = useState<string>('');
   const [result, setResult] = useState<number | null>(null);
   const [error, setError] = useState<string>('');
+  // Track the authenticated user's ID (if any)
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showSignUpDialog, setShowSignUpDialog] = useState(false);
 
+  // On mount, check the current session & subscribe to changes
+  useEffect(() => {
+    async function fetchSession() {
+      const {
+        data: { session },
+      } = await supabaseBrowserClient.auth.getSession();
+      if (session?.user?.id) {
+        setUserId(session.user.id);
+      } else {
+        setUserId(null);
+      }
+    }
+    fetchSession();
+
+    const { data: authListener } = supabaseBrowserClient.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session?.user?.id) {
+          setUserId(session.user.id);
+        } else {
+          setUserId(null);
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  /**
+   * Calculates the required score on the final
+   */
   const calculateRequiredScore = () => {
     // Convert string inputs to numbers and validate
     const current = parseFloat(currentGrade);
@@ -74,15 +118,55 @@ export default function FinalGradeCalculator() {
 
     // Calculate required final exam score
     // Formula: (Desired Grade - Current Grade × (1 - Final Weight)) ÷ Final Weight
-    const requiredScore = (desired - (current * (1 - weight/100))) / (weight/100);
-    
+    const requiredScore = (desired - (current * (1 - weight / 100))) / (weight / 100);
+
     // Always show the result, even if it's over 100%
     setResult(Math.round(requiredScore * 100) / 100);
   };
 
-  const saveCalculation = () => {
-    // This will be implemented in the next step
-    console.log('Saving calculation...');
+  /**
+   * Saves the calculation if the user is logged in
+   */
+  const saveCalculation = async () => {
+    if (!userId) {
+      // Show the sign-up dialog instead of the alert
+      setShowSignUpDialog(true);
+      return;
+    }
+
+    if (result === null) {
+      alert("Please calculate first.");
+      return;
+    }
+
+    // POST to our final-exams route
+    try {
+      const res = await fetch("/api/calculations/final-exams", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          input_data: {
+            currentGrade,
+            desiredGrade,
+            finalWeight,
+          },
+          calculated_final_score_needed: result,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.error("Save error:", data.error);
+        alert("Unable to save calculation: " + data.error);
+      } else {
+        alert("Calculation saved successfully!");
+      }
+    } catch (err: any) {
+      console.error("Request failed:", err.message);
+      alert("Error saving calculation. Check console for details.");
+    }
   };
 
   return (
@@ -137,7 +221,7 @@ export default function FinalGradeCalculator() {
               />
             </div>
 
-            <Button 
+            <Button
               onClick={calculateRequiredScore}
               className="w-full"
               size="lg"
@@ -173,6 +257,16 @@ export default function FinalGradeCalculator() {
             <Button variant="secondary" onClick={saveCalculation} className="w-full">
               Save My Result
             </Button>
+          </div>
+        )}
+
+        {/* Only show SignUpDialog when there's a result and user is not logged in */}
+        {!userId && result !== null && (
+          <div className="mt-8 flex justify-center">
+            <SignUpDialog
+              open={showSignUpDialog}
+              onOpenChange={setShowSignUpDialog}
+            />
           </div>
         )}
       </div>
