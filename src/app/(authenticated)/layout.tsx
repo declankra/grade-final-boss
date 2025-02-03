@@ -1,11 +1,10 @@
 // /src/app/(authenticated)/layout.tsx
 // Authenticated layout that wraps pages with the sidebarimport { redirect } from 'next/navigation';
-
+// /src/app/(authenticated)/layout.tsx
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import Header from '@/components/layout/Header'
-import { Sidebar } from '@/components/ui/sidebar'
+import { SidebarProvider } from '@/components/ui/sidebar'
 
 export default async function AuthenticatedLayout({
   children,
@@ -33,14 +32,10 @@ export default async function AuthenticatedLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <div className="flex-1">
-        <Header />
-        <main className="container mx-auto px-4 py-8">
-          {children}
-        </main>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen bg-background">
+        {children}
       </div>
-    </div>
+    </SidebarProvider>
   );
-} 
+}
