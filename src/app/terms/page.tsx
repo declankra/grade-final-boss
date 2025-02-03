@@ -1,3 +1,6 @@
+// src/app/terms/page.tsx
+// Terms of Service & Privacy Policy page
+
 import React from 'react';
 
 const TermsPage = () => {

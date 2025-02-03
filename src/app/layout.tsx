@@ -15,30 +15,49 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  themeColor: "#ffffff",
 };
 
+// fallback metadata
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
-  title: "Grade Final Boss | Defeat your Final Exams",
-  description: "Cumulative Grade and GPA Calculator for College Students",
-
-    // Open Graph metadata for rich sharing previews
-    openGraph: {
-      title: "Grade Final Boss | Defeat your Final Exams",
-      description: "Cumulative Grade and GPA Calculator for College Students",
-      url: process.env.NEXT_PUBLIC_BASE_URL,
-      siteName: "Grade Final Boss",
-      images: [
-        {
-          url: "/og-image.png", // This should be 1200x630px for optimal sharing
-          width: 1200,
-          height: 630,
-          alt: "Grade Final Boss Preview",
-        }
-      ],
-      locale: "en_US",
-      type: "website",
+  title: {
+    default: "Grade Final Boss | Defeat your Final Exams",
+    template: "%s | Grade Final Boss"
+  },
+  description: "Free calculators and tools to help students plan their grades, calculate cumulative GPAs, and achieve their academic goals.",
+  keywords: ["grade calculator", "GPA calculator", "final exam calculator", "cumulative GPA calculator", "final grade calculator", "final exam grade calculator", "class grade calculator", "semester GPA calculator"],
+  
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: process.env.NEXT_PUBLIC_BASE_URL,
+    siteName: "Grade Final Boss",
+    title: "Grade Final Boss | Defeat your Final Exams",
+    description: "Free calculators and tools to help students plan their grades",
+    images: [{
+      url: "/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "Grade Final Boss Preview"
+    }],
+  },
+  
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
+  },
+  
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
 
   // Favicon and manifest
   icons: {
