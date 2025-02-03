@@ -1,6 +1,8 @@
 // src/components/ui/sign-up-dialog.tsx
 "use client"
 
+import { useState, useId } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,10 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useId } from "react";
 import Image from "next/image";
 
-// Add this interface at the top of the file
 interface SignUpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -23,15 +23,65 @@ interface SignUpDialogProps {
 
 const SignUpDialog = ({ open, onOpenChange }: SignUpDialogProps) => {
   const id = useId();
-  function handleEmailSignUp() {
-    // TODO: connect to Supabase's auth.signUp or similar
-    alert("Not yet implemented. Replace with your Supabase sign-up logic.");
+  const router = useRouter();
+
+  // State to track form inputs and feedback
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [signupStatus, setSignupStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  async function handleEmailSignUp(formData: FormData) {
+    setIsLoading(true);
+    setError(null);
+    setSignupStatus('loading');
+    
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password'),
+          name: formData.get('name'),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to sign up');
+      }
+
+      setSignupStatus('success');
+      
+      // If email confirmation is not required:
+      if (data.data?.session) {
+        onOpenChange?.(false);
+        router.push('/dashboard');
+        router.refresh();
+      } else {
+        // Show email confirmation message
+        setError('Please check your email to confirm your account.');
+      }
+
+    } catch (err: any) {
+      setSignupStatus('error');
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleGoogleSignUp() {
-    // TODO: connect to Supabase's auth.signInWithOAuth({ provider: "google" })
-    alert("Not yet implemented. Replace with your Supabase Google OAuth.");
+    // Implement Supabase OAuth for Google if needed.
+    alert("Not yet implemented. Replace with your Supabase Google OAuth logic.");
   }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -43,25 +93,53 @@ const SignUpDialog = ({ open, onOpenChange }: SignUpDialogProps) => {
             className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border"
             aria-hidden="true"
           >
-            <Image src="/logo.png" alt="Logo" className="w-full h-full object-cover" width={100} height={100} />
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              className="w-full h-full object-cover"
+              width={100}
+              height={100}
+            />
           </div>
           <DialogHeader>
-            <DialogTitle className="sm:text-center">Sign up Grade Final Boss</DialogTitle>
+            <DialogTitle className="sm:text-center">
+              Sign up Grade Final Boss
+            </DialogTitle>
             <DialogDescription className="sm:text-center">
               We just need a few details to get you started.
             </DialogDescription>
           </DialogHeader>
         </div>
 
-        <form className="space-y-5">
+        <form
+          className="space-y-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleEmailSignUp(new FormData(e.target as HTMLFormElement));
+          }}
+        >
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor={`${id}-name`}>Full name</Label>
-              <Input id={`${id}-name`} placeholder="Sam Altman" type="text" required />
+              <Input
+                id={`${id}-name`}
+                placeholder="Sam Altman"
+                type="text"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`${id}-email`}>Email</Label>
-              <Input id={`${id}-email`} placeholder="hi@email.com" type="email" required />
+              <Input
+                id={`${id}-email`}
+                placeholder="hi@email.com"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor={`${id}-password`}>Password</Label>
@@ -70,11 +148,16 @@ const SignUpDialog = ({ open, onOpenChange }: SignUpDialogProps) => {
                 placeholder="Enter your password"
                 type="password"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
-          <Button type="button" className="w-full">
-            Sign up
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing up..." : "Sign up"}
           </Button>
         </form>
 
@@ -82,7 +165,9 @@ const SignUpDialog = ({ open, onOpenChange }: SignUpDialogProps) => {
           <span className="text-xs text-muted-foreground">Or</span>
         </div>
 
-        <Button variant="outline">Continue with Google</Button>
+        <Button variant="outline" onClick={handleGoogleSignUp}>
+          Continue with Google
+        </Button>
 
         <p className="text-center text-xs text-muted-foreground">
           By signing up you agree to our{" "}
