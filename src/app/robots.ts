@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         '/settings/',
       ],
     },
-    sitemap: `${process.env.NEXT_PUBLIC_BASE_URL}/sitemap.ts`,
+    sitemap: `${process.env.NEXT_PUBLIC_BASE_URL}/sitemap.xml`,
   };
 }   
