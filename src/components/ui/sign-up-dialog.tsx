@@ -1,9 +1,9 @@
 // src/components/ui/sign-up-dialog.tsx
-"use client"
+'use client';
 
-import { useState, useId } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useState, useId } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,114 +11,104 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Image from "next/image";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Image from 'next/image';
 
 interface SignUpDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+type AuthMode = 'signup' | 'signin';
+
 const SignUpDialog = ({ open, onOpenChange }: SignUpDialogProps) => {
   const id = useId();
   const router = useRouter();
 
-  // State to track form inputs and feedback
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // State to track form inputs and status
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [signupStatus, setSignupStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [authMode, setAuthMode] = useState<AuthMode>('signup'); // toggle between signup and signin
 
-  async function handleEmailSignUp(formData: FormData) {
+  async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
-    setSignupStatus('loading');
-    
+
+    const payload: Record<string, string> = { email, password };
+    if (authMode === 'signup') {
+      payload['name'] = fullName;
+    }
+
     try {
-      const response = await fetch('/api/auth/signup', {
+      // Determine endpoint based on auth mode
+      const endpoint = authMode === 'signup' ? '/api/auth/signup' : '/api/auth/signin';
+      const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.get('email'),
-          password: formData.get('password'),
-          name: formData.get('name'),
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to sign up');
+        throw new Error(data.error || 'Authentication failed.');
       }
 
-      setSignupStatus('success');
-      
-      // If email confirmation is not required:
+      // If a session exists, redirect immediately
       if (data.data?.session) {
-        onOpenChange?.(false);
+        onOpenChange(false);
         router.push('/dashboard');
         router.refresh();
       } else {
-        // Show email confirmation message
+        // In case email confirmation is required (or other flow)
         setError('Please check your email to confirm your account.');
       }
-
     } catch (err: any) {
-      setSignupStatus('error');
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
   }
 
-  function handleGoogleSignUp() {
-    // Implement Supabase OAuth for Google if needed.
-    alert("Not yet implemented. Replace with your Supabase Google OAuth logic.");
-  }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline">Sign up</Button>
+        <Button variant="outline">{authMode === 'signup' ? 'Sign up' : 'Sign in'}</Button>
       </DialogTrigger>
       <DialogContent>
         <div className="flex flex-col items-center gap-2">
           <div
-            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border"
             aria-hidden="true"
           >
             <Image
               src="/logo.png"
               alt="Logo"
               className="w-full h-full object-cover"
-              width={100}
-              height={100}
+              width={44}
+              height={44}
             />
           </div>
           <DialogHeader>
             <DialogTitle className="sm:text-center">
-              Sign up Grade Final Boss
+              {authMode === 'signup' ? 'Sign up for Grade Final Boss' : 'Sign in to Grade Final Boss'}
             </DialogTitle>
             <DialogDescription className="sm:text-center">
-              We just need a few details to get you started.
+              {authMode === 'signup'
+                ? 'We just need a few details to get you started.'
+                : 'Enter your email and password to sign in.'}
             </DialogDescription>
           </DialogHeader>
         </div>
 
-        <form
-          className="space-y-5"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleEmailSignUp(new FormData(e.target as HTMLFormElement));
-          }}
-        >
-          <div className="space-y-4">
+        <form className="space-y-5" onSubmit={handleFormSubmit}>
+          {authMode === 'signup' && (
             <div className="space-y-2">
               <Label htmlFor={`${id}-name`}>Full name</Label>
               <Input
@@ -130,52 +120,49 @@ const SignUpDialog = ({ open, onOpenChange }: SignUpDialogProps) => {
                 onChange={(e) => setFullName(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor={`${id}-email`}>Email</Label>
-              <Input
-                id={`${id}-email`}
-                placeholder="hi@email.com"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor={`${id}-password`}>Password</Label>
-              <Input
-                id={`${id}-password`}
-                placeholder="Enter your password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor={`${id}-email`}>Email</Label>
+            <Input
+              id={`${id}-email`}
+              placeholder="hi@email.com"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${id}-password`}>Password</Label>
+            <Input
+              id={`${id}-password`}
+              placeholder="Enter your password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing up..." : "Sign up"}
+            {isLoading ? (authMode === 'signup' ? 'Signing up...' : 'Signing in...') : authMode === 'signup' ? 'Sign up' : 'Sign in'}
           </Button>
         </form>
 
-        <div className="flex items-center gap-3 before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
-          <span className="text-xs text-muted-foreground">Or</span>
+        <div className="mt-4 text-center text-sm text-muted-foreground">
+          {authMode === 'signup' ? 'Already have an account?' : "Don't have an account?"}{' '}
+          <button
+            className="underline hover:no-underline"
+            onClick={() => {
+              setError(null);
+              setAuthMode(authMode === 'signup' ? 'signin' : 'signup');
+            }}
+          >
+            {authMode === 'signup' ? 'Sign in' : 'Sign up'}
+          </button>
         </div>
-
-        <Button variant="outline" onClick={handleGoogleSignUp}>
-          Continue with Google
-        </Button>
-
-        <p className="text-center text-xs text-muted-foreground">
-          By signing up you agree to our{" "}
-          <a className="underline hover:no-underline" href="#">
-            Terms
-          </a>
-          .
-        </p>
       </DialogContent>
     </Dialog>
   );
