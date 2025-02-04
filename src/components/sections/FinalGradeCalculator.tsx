@@ -1,6 +1,6 @@
-// src/components/pages/final-grade-calculator.tsx
-
+// src/components/sections/FinalGradeCalculator.tsx
 "use client"
+
 import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import SignUpDialog from "@/components/ui/sign-up-dialog";
+import { useCalculation } from "@/contexts/CalculationContext";
 
 const supabaseBrowserClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -52,6 +53,9 @@ const getResultMessage = (score: number): { message: string; color: string } => 
 };
 
 export default function FinalGradeCalculator() {
+  // Get shared calculation state
+  const { calculationState, setCalculationState } = useCalculation();
+
   // Form inputs
   const [currentGrade, setCurrentGrade] = useState<string>('');
   const [desiredGrade, setDesiredGrade] = useState<string>('');
@@ -121,7 +125,16 @@ export default function FinalGradeCalculator() {
     const requiredScore = (desired - (current * (1 - weight / 100))) / (weight / 100);
 
     // Always show the result, even if it's over 100%
-    setResult(Math.round(requiredScore * 100) / 100);
+    const finalResult = Math.round(requiredScore * 100) / 100;
+    setResult(finalResult);
+    
+    // Update shared calculation state
+    setCalculationState({
+      currentGrade,
+      desiredGrade,
+      finalWeight,
+      result: finalResult
+    });
   };
 
   /**

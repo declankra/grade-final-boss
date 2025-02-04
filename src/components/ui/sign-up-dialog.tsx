@@ -15,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
+import { useCalculation } from '@/contexts/CalculationContext';
 
 interface SignUpDialogProps {
   open: boolean;
@@ -26,7 +27,7 @@ type AuthMode = 'signup' | 'signin';
 const SignUpDialog = ({ open, onOpenChange }: SignUpDialogProps) => {
   const id = useId();
   const router = useRouter();
-
+  const { saveCalculation } = useCalculation();
   // State to track form inputs and status
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -60,13 +61,22 @@ const SignUpDialog = ({ open, onOpenChange }: SignUpDialogProps) => {
         throw new Error(data.error || 'Authentication failed.');
       }
 
-      // If a session exists, redirect immediately
+      // If we have a session, save the calculation and redirect
       if (data.data?.session) {
-        onOpenChange(false);
-        router.push('/dashboard');
-        router.refresh();
+        const userId = data.data.session.user.id;
+        try {
+          await saveCalculation(userId);
+          onOpenChange(false);
+          router.push('/dashboard');
+          router.refresh();
+        } catch (saveError) {
+          console.error('Error saving calculation:', saveError);
+          // Still redirect even if save fails
+          onOpenChange(false);
+          router.push('/dashboard');
+          router.refresh();
+        }
       } else {
-        // In case email confirmation is required (or other flow)
         setError('Please check your email to confirm your account.');
       }
     } catch (err: any) {
