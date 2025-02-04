@@ -105,6 +105,11 @@ export default function DashboardPage() {
                         <SidebarMenuSubButton asChild>
                           <Link href="/calculator/final-exam">Final Exam</Link>
                         </SidebarMenuSubButton>
+                        <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
+                          <Link href="/calculator/course-grades">Course Grades</Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
@@ -210,22 +215,25 @@ export default function DashboardPage() {
             <h1 className="text-3xl font-bold mb-6">Grade Dashboard</h1>
             
             {/* Dashboard Content */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {/* Placeholder for actual dashboard widgets */}
               <div className="rounded-lg border bg-card p-6">
                 <h2 className="text-lg font-semibold mb-2">Current GPA</h2>
-                <p className="text-2xl font-bold">3.85</p>
+                <p className="text-2xl font-bold">3.2</p>
               </div>
-              
+              <div className="rounded-lg border bg-card p-6">
+                <h2 className="text-lg font-semibold mb-2">Projected GPA</h2>
+                <p className="text-2xl font-bold">3.45</p>
+              </div>
               <div className="rounded-lg border bg-card p-6">
                 <h2 className="text-lg font-semibold mb-2">Classes This Semester</h2>
                 <p className="text-2xl font-bold">5</p>
               </div>
-              
               <div className="rounded-lg border bg-card p-6">
                 <h2 className="text-lg font-semibold mb-2">Upcoming Finals</h2>
                 <p className="text-2xl font-bold">3</p>
               </div>
+
             </div>
           </div>
         </main>
