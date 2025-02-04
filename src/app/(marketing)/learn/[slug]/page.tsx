@@ -1,55 +1,125 @@
-// Add this interface above the function
+// src/app/(marketing)/learn/[slug]/page.tsx
+import { Metadata } from 'next'
+
+// Define the Learn interface for future use
 interface Learn {
-  slug: string;
+  slug: string
+  title: string
+  description: string
+  keywords: string[]
+  image: string
+  url: string
 }
+
+// Hardcode valid slugs for development
+const validSlugs = [
+  'gpa-calculation',
+  'final-grade-calculation',
+  'semester-planning',
+  'study-strategies'
+]
 
 export async function generateStaticParams() {
-    const posts = await fetch('https://.../learn').then((res) => res.json())
-   
+  // Return hardcoded slugs during development
+  return validSlugs.map((slug) => ({
+    slug,
+  }))
+}
+
+// Placeholder data generator
+function getPlaceholderData(slug: string): Learn {
+  return {
+    slug,
+    title: `${slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`,
+    description: `Learn about ${slug.replace(/-/g, ' ')} with Grade Final Boss.`,
+    keywords: ['grades', 'education', 'calculator', slug.replace(/-/g, ' ')],
+    image: '/placeholder.jpg',
+    url: `https://gradefinalboss.com/learn/${slug}`,
+  }
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const learn = getPlaceholderData(params.slug)
+  
+  return {
+    title: `${learn.title} | Grade Final Boss`,
+    description: learn.description,
+    keywords: learn.keywords,
+    openGraph: {
+      title: learn.title,
+      description: learn.description,
+      images: [learn.image],
+      url: learn.url,
+      type: 'article',
+      siteName: 'Grade Final Boss',
+    },
+  }
+}
+
+export default function LearnPage({ params }: { params: { slug: string } }) {
+  // For development, show a placeholder page
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-4">
+        Coming Soon: {params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+      </h1>
+      <p className="text-gray-600 mb-8">
+        This learning resource is currently under development. Check back soon!
+      </p>
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
+        <p className="text-yellow-800">
+          Placeholder content for {params.slug} learning page.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+/*
+// First, let's define a complete Learn interface
+interface Learn {
+  slug: string;
+  title: string;
+  description: string;
+  keywords: string;
+  image: string;
+  url: string;
+}
+
+// This is the correct way to handle static params in App Router
+export async function generateStaticParams() {
+  try {
+    // Try to fetch from API first (REPLACE WITH YOUR ACTUAL API ENDPOINT)
+    const posts = await fetch('https://www.gradefinalboss.com/api/learn').then((res) => res.json());
+    
     return posts.map((post: Learn) => ({
       slug: post.slug,
-    }))
+    }));
+  } catch (error) {
+    // Fallback to hardcoded slugs if API fails
+    console.log('Falling back to static slugs:', error);
+    return [
+      { slug: 'gpa-calculation' },
+      { slug: 'final-grade-calculation' },
+      // Add other valid slugs your learn section uses
+    ];
   }
-
-// Here's an example of a page optimized for this using SSG:
-// pages/learn/[slug].js
-
- 
-import Head from 'next/head';
- 
-export async function getStaticPaths() {
-  // Call an external API endpoint to get posts
-  const res = await fetch('https://www.example.com/api/learn');
-  const posts = await res.json();
- 
-  // Get the paths we want to pre-render based on posts
-  const paths = posts.map((post: Learn) => ({
-    params: { slug: post.slug },
-  }));
-  // Set fallback to blocking. Now any new post added post build will SSR
-  // to ensure SEO. It will then be static for all subsequent requests
-  return { paths, fallback: 'blocking' };
 }
- 
-export async function getStaticProps({ params }: { params: { slug: string } }) {
-  const res = await fetch(`https://www.example.com/api/learn/${params.slug}`);
-  const data = await res.json();
- 
-  return {
-    props: {
-      learn: data,
-    },
-  };
-}
- 
-function LearnPost ({ learn }: { learn: Learn }) {
+
+// This replaces getStaticProps in App Router - it must be named 'page'
+export default async function Page({ params }: { params: { slug: string } }) {
+  // Replace with your actual API endpoint
+  const learn: Learn = await fetch(
+    `https://www.gradefinalboss.com/api/learn/${params.slug}`
+  ).then((res) => res.json());
+
   return (
     <>
-      <Head>
-        <title>{learn.title} | Grade Final Boss</title>
-        <meta name="description" content={learn.description} />
-        <meta name="keywords" content={learn.keywords} />
-        <meta name="author" content="Grade Final Boss" />
+      // Note: Head component is not needed in App Router - use metadata export instead 
+      <title>{learn.title} | Grade Final Boss</title>
+      <meta name="description" content={learn.description} />
+      <meta name="keywords" content={learn.keywords} />
+      <meta name="author" content="Grade Final Boss" />
         <meta name="robots" content="index, follow" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#000000" />
@@ -65,10 +135,29 @@ function LearnPost ({ learn }: { learn: Learn }) {
         <meta name="og:url" content={learn.url} />
         <meta name="og:type" content="article" />
         <meta name="og:site_name" content="Grade Final Boss" />
-        {/* Add more meta tags as needed */}
-      </Head>
     </>
   );
 }
- 
-export default LearnPost;
+
+// You can also export metadata configuration
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const learn: Learn = await fetch(
+    `https://www.gradefinalboss.com/api/learn/${params.slug}`
+  ).then((res) => res.json());
+
+  return {
+    title: `${learn.title} | Grade Final Boss`,
+    description: learn.description,
+    keywords: learn.keywords,
+    openGraph: {
+      title: learn.title,
+      description: learn.description,
+      images: [learn.image],
+      url: learn.url,
+      type: 'article',
+      siteName: 'Grade Final Boss',
+    },
+    // ... other metadata
+  };
+}
+*/
