@@ -65,91 +65,82 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+
+  // JSON-LD structured data
+  other: {
+    "application/ld+json": JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://gradefinalboss.com/#website",
+          "url": "https://gradefinalboss.com/",
+          "name": "Grade Final Boss",
+          "description": "Grade calculators for students",
+          "potentialAction": [
+            {
+              "@type": "SearchAction",
+              "target": "https://gradefinalboss.com/search?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          ],
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://gradefinalboss.com/#webpage",
+          "url": "https://gradefinalboss.com/",
+          "name": "Grade Final Boss | Grade & GPA Calculators for Students",
+          "isPartOf": {
+            "@id": "https://gradefinalboss.com/#website"
+          },
+          "about": {
+            "@id": "https://gradefinalboss.com/#organization"
+          },
+          "description": "Simple grade calculators without ads. Calculate final exam scores, GPAs, course grades and more. Take control of your academic success!",
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Grade Final Boss",
+          "operatingSystem": "Web",
+          "applicationCategory": "EducationalApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "127"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://gradefinalboss.com/#organization",
+          "name": "Grade Final Boss",
+          "url": "https://gradefinalboss.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "inLanguage": "en-US",
+            "@id": "https://gradefinalboss.com/#/schema/logo/image/",
+            "url": "https://gradefinalboss.com/logo.png",
+            "contentUrl": "https://gradefinalboss.com/logo.png",
+            "width": 180,
+            "height": 180,
+            "caption": "Grade Final Boss"
+          },
+          "image": {
+            "@id": "https://gradefinalboss.com/#/schema/logo/image/"
+          }
+        }
+      ]
+    }),
+  }
 };
 
 // The page component itself just renders our HomePage component
 export default function Page() {
   return <HomePage />;
-}
-
-// JSON-LD structured data script to be added to the page layout
-export function generateJSONLD() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": "https://gradefinalboss.com/#website",
-        "url": "https://gradefinalboss.com/",
-        "name": "Grade Final Boss",
-        "description": "Grade calculators for students",
-        "potentialAction": [
-          {
-            "@type": "SearchAction",
-            "target": "https://gradefinalboss.com/search?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        ],
-        "inLanguage": "en-US"
-      },
-      {
-        "@type": "WebPage",
-        "@id": "https://gradefinalboss.com/#webpage",
-        "url": "https://gradefinalboss.com/",
-        "name": "Grade Final Boss | Grade & GPA Calculators for Students",
-        "isPartOf": {
-          "@id": "https://gradefinalboss.com/#website"
-        },
-        "about": {
-          "@id": "https://gradefinalboss.com/#organization"
-        },
-        "description": "Simple grade calculators without ads. Calculate final exam scores, GPAs, course grades and more. Take control of your academic success!",
-        "inLanguage": "en-US"
-      },
-      {
-        "@type": "SoftwareApplication",
-        "name": "Grade Final Boss",
-        "operatingSystem": "Web",
-        "applicationCategory": "EducationalApplication",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.9",
-          "ratingCount": "127"
-        }
-      },
-      {
-        "@type": "Organization",
-        "@id": "https://gradefinalboss.com/#organization",
-        "name": "Grade Final Boss",
-        "url": "https://gradefinalboss.com/",
-        "logo": {
-          "@type": "ImageObject",
-          "inLanguage": "en-US",
-          "@id": "https://gradefinalboss.com/#/schema/logo/image/",
-          "url": "https://gradefinalboss.com/logo.png",
-          "contentUrl": "https://gradefinalboss.com/logo.png",
-          "width": 180,
-          "height": 180,
-          "caption": "Grade Final Boss"
-        },
-        "image": {
-          "@id": "https://gradefinalboss.com/#/schema/logo/image/"
-        }
-      }
-    ]
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(jsonLd),
-      }}
-    />
-  );
 }
