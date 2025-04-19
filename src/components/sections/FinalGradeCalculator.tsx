@@ -183,7 +183,7 @@ export default function FinalGradeCalculator() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4 gap-6">
+    <div className="flex flex-col items-center justify-center h-screen overflow-hidden bg-background p-4 gap-6">
       <div className="w-full max-w-md">
         <h1 className="text-4xl font-bold mb-2">Final Grade Calculator</h1>
         <p className="text-zinc-600 mb-6">
