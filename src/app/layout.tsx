@@ -2,6 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import Script from 'next/script';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { OpenPanelProvider } from "@/lib/analytics/openpanel/OpenPanelProvider";
@@ -89,6 +90,24 @@ export default function RootLayout({
         className={`${inter.variable} antialiased min-h-screen w-full overflow-x-hidden`}
         suppressHydrationWarning
       >
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-65754CVRTC`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-65754CVRTC', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
         <OpenPanelProvider />
         <Header />
         <main className="w-full overflow-x-hidden">{children}</main>
