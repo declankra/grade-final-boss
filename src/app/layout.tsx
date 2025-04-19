@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { OpenPanelProvider } from "@/lib/analytics/openpanel/OpenPanelProvider";
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -92,6 +93,7 @@ export default function RootLayout({
         <Header />
         <main className="w-full overflow-x-hidden">{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
