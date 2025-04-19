@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { Trash2 } from 'lucide-react';
 import Head from 'next/head';
+import { sendGAEvent } from '@/lib/gtag'; // Import GA utility
 
 interface Course {
   id: string;
@@ -180,11 +181,23 @@ export default function GPACalculator() {
         else if (!error && courses.length === 0) setError("Please add courses to calculate GPA.");
     }
 
-
+    // Send GA Event only if calculation was attempted (regardless of success/error state initially)
+    // We only send *after* validation checks to avoid sending for clearly invalid attempts before basic checks.
+    sendGAEvent('calculate_gpa', { 
+        calculator_type: 'cumulative_gpa',
+        calculation_successful: validInputs && (semesterGpa !== null || cumulativeGpa !== null), // Track if calculation yielded a result
+        included_prior_gpa: hasCompletePriorInfo
+    });
   };
 
   const handleShare = async () => {
-    if (!navigator.share) {
+    // Send GA Event for share attempt
+    sendGAEvent('share_gpa', { 
+        calculator_type: 'cumulative_gpa', 
+        method: typeof navigator.share === 'function' ? 'native' : 'fallback' 
+    });
+
+    if (typeof navigator.share !== 'function') {
       console.log('Web Share API not supported in this browser.');
       // Optionally: Implement a fallback, like copying to clipboard
       // alert('Sharing not supported on this browser. You could copy the results manually.');

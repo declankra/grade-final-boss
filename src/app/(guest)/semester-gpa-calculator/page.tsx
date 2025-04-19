@@ -24,6 +24,7 @@ import {
 import { Trash2 } from 'lucide-react';
 import Head from 'next/head'; // Import Head for metadata
 import Link from 'next/link'; // Import Link
+import { sendGAEvent } from "@/lib/gtag"; // Import GA utility
 
 // Define the structure for a course
 interface Course {
@@ -83,6 +84,10 @@ export default function SemesterGPA() {
           course.id === idToUpdate ? { ...course, [field]: value } : course
         )
       );
+      // Send GA Event (only for grade/credits changes, maybe not name?)
+      if (field === 'grade' || field === 'credits') {
+        sendGAEvent('update_semester_course', { calculator_type: 'semester_gpa', updated_field: field });
+      }
     },
     []
   );

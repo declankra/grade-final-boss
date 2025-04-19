@@ -11,6 +11,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import SignUpDialog from "@/components/ui/sign-up-dialog";
 import { useCalculation } from "@/contexts/CalculationContext";
+import { sendGAEvent } from "@/lib/gtag";
 
 const supabaseBrowserClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -135,12 +136,18 @@ export default function FinalGradeCalculator() {
       finalWeight,
       result: finalResult
     });
+
+    // Send GA Event for calculation success
+    sendGAEvent('calculate_final_exam_score', { calculator_type: 'final_exam', calculation_successful: true });
   };
 
   /**
    * Saves the calculation if the user is logged in
    */
   const saveCalculation = async () => {
+    // Send GA Event for save attempt
+    sendGAEvent('save_final_exam_score_attempt', { calculator_type: 'final_exam', user_logged_in: !!userId });
+
     if (!userId) {
       // Show the sign-up dialog instead of the alert
       setShowSignUpDialog(true);

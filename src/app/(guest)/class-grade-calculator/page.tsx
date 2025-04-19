@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Trash2, Share2, Check } from 'lucide-react';
 import Head from 'next/head';
 import ReactConfetti from 'react-confetti';
+import { sendGAEvent } from '@/lib/gtag'; // Import GA utility
 
 interface Assignment {
   id: number;
@@ -80,6 +81,9 @@ export default function ClassGradeCalculator() {
     const isBadGrade = calculatedProjectedGrade < 50;
     setIsPoopEmoji(isBadGrade);
     setRunConfetti(true);
+
+    // Send GA Event for calculation
+    sendGAEvent('calculate_class_grade', { calculator_type: 'class_grade' });
   };
 
   // Effect to stop confetti after a delay
@@ -95,6 +99,9 @@ export default function ClassGradeCalculator() {
   const handleShare = async () => {
     if (projectedGrade === null) return;
 
+    // Send GA Event for share attempt
+    sendGAEvent('share_class_grade', { calculator_type: 'class_grade', method: typeof navigator.share === 'function' ? 'native' : 'clipboard' });
+
     const shareData = {
       title: "My Grade Projection",
       text: `My projected course grade is ${projectedGrade}%! Calculate yours with Grade Final Boss.`,
@@ -103,7 +110,7 @@ export default function ClassGradeCalculator() {
 
     try {
         // Check if Web Share API is supported
-      if (navigator.share) {
+      if (typeof navigator.share === 'function') {
         await navigator.share(shareData);
         // No need for copied state feedback for native share
         console.log('Successfully shared');

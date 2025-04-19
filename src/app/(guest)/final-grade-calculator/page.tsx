@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2, Share2 } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { sendGAEvent } from "@/lib/gtag"; // Import GA utility
 
 interface GradeComponent {
   id: number;
@@ -98,6 +99,9 @@ export default function FinalGradeCalculator() {
 
   const handleShare = async () => {
     if (!isShareSupported || overallGrade === null) return;
+
+    // Send GA Event
+    sendGAEvent('share_final_grade', { calculator_type: 'final_grade' });
 
     const shareData = {
       title: 'My Final Grade Calculation',
