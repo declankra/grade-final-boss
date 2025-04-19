@@ -158,6 +158,7 @@ export default function HomePage() {
         </div>
       </section>
 
+
       {/* Feature Section */}
       <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4">
@@ -217,24 +218,40 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-6 border-t border-gray-200 dark:border-gray-800">
+            {/* Learn Section */}
+            <section className="py-16 md:py-24 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              © {new Date().getFullYear()} Grade Final Boss
-            </p>
-            <a 
-              href="https://declankramper.com" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors duration-200"
-            >
-              Created by Declan Kramper
-            </a>
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">
+            Learn & Improve
+          </h2>
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-10 text-center max-w-2xl mx-auto">
+            Master grade calculations, plan your semester, and discover effective study strategies with our guides.
+          </p>
+          <div className="text-center mb-12">
+            <Button asChild size="lg">
+              <Link href="/learn">Explore All Guides</Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <Link href="/learn/gpa-calculation" className="block p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+              <h3 className="font-semibold text-lg mb-1">Master GPA Calculation</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Simple steps & tools to understand and calculate your GPA.</p>
+            </Link>
+            <Link href="/learn/final-grade-calculation" className="block p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+              <h3 className="font-semibold text-lg mb-1">Calculate Your Final Grade</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Essential guide to figuring out the grade you need.</p>
+            </Link>
+            <Link href="/learn/semester-planning" className="block p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+              <h3 className="font-semibold text-lg mb-1">Effective Semester Planning</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Manage your workload and avoid stress for academic success.</p>
+            </Link>
+            <Link href="/learn/study-strategies" className="block p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+              <h3 className="font-semibold text-lg mb-1">Proven Study Strategies</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Boost your grades with effective learning techniques.</p>
+            </Link>
           </div>
         </div>
-      </footer>
+      </section>
     </main>
   );
 }

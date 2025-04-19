@@ -1,7 +1,6 @@
 // /src/app/(guest)/layout.tsx
 // Guest layout - Server Component
 import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import GuestLayoutClient from './guest-layout-client'; // Import the client component
 
 // Metadata MUST be exported from a Server Component
@@ -21,7 +20,6 @@ export default function GuestLayout({
       <Header />
       {/* Use the client component to wrap children and render NavBar */}
       <GuestLayoutClient>{children}</GuestLayoutClient>
-      <Footer />
     </>
   );
 } 
