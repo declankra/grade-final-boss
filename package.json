@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@next/third-parties": "^16.2.4",
-    "@openpanel/nextjs": "^1.0.7",
+    "@openpanel/nextjs": "^1.4.0",
     "@radix-ui/react-dialog": "^1.1.5",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-select": "^2.2.2",
