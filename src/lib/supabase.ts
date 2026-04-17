@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-let supabase: ReturnType<typeof createClient>;
+let supabase: SupabaseClient<any>;
 
 export const getSupabase = () => {
   if (supabase) return supabase;
@@ -12,6 +12,6 @@ export const getSupabase = () => {
     throw new Error('Missing Supabase URL or anonymous key.');
   }
 
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  supabase = createClient<any>(supabaseUrl, supabaseAnonKey);
   return supabase;
 };
